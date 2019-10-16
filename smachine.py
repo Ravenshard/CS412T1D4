@@ -5,15 +5,12 @@ import rospy
 import smach
 import smach_ros
 import math
-from math import tanh
 from geometry_msgs.msg import Twist
 import numpy as np
 from sensor_msgs.msg import LaserScan
 from sensor_msgs.msg import Joy
 
-global button_start
 global shutdown_requested
-
 
 class Wait(smach.State):
     def __init__(self):
@@ -21,7 +18,23 @@ class Wait(smach.State):
                                             'box5', 'box6', 'box7', 'box8'])
 
     def execute(self, userdata):
-        return 'box1'
+        joy_sub = rospy.Subscriber('joy', Joy, self.controller_callback)
+        self.stateSwitch = None
+        while self.stateSwitch == None: rospy.sleep(1)
+        rospy.loginfo("Switching to state BOX{}".format(self.stateSwitch))
+        joy_sub.unregister()
+        return 'box{}'.format(self.stateSwitch)
+
+    def controller_callback(self, event):
+        if event.buttons[1] == 1:     self.stateSwitch = 1
+        elif event.buttons[2] == 1:  self.stateSwitch = 2
+        elif event.buttons[3] == 1:  self.stateSwitch = 3
+        elif event.buttons[0] == 1:  self.stateSwitch = 4
+        elif event.axes[0] == -1:    self.stateSwitch = 5
+        elif event.axes[1] == 1:     self.stateSwitch = 6
+        elif event.axes[0] == 1:     self.stateSwitch = 7
+        elif event.axes[1] == -1:    self.stateSwitch = 8
+        return
 
 class Box1(smach.State):
     def __init__(self):
@@ -29,7 +42,30 @@ class Box1(smach.State):
                                             'box5', 'box6', 'box7', 'box8'])
 
     def execute(self, userdata):
-        return 'wait'
+        joy_sub = rospy.Subscriber('joy', Joy, self.controller_callback)
+        self.stateSwitch = None
+        # Replace next 3 lines with code to go waypoint
+        start = rospy.get_time()
+        while self.stateSwitch == None:
+            if rospy.get_time() > start + 5: self.stateSwitch = "wait"
+
+        joy_sub.unregister()
+        if self.stateSwitch == "wait":
+            rospy.loginfo("Switching to state WAIT")
+            return 'wait'
+        else: rospy.loginfo("Switching to state BOX{}".format(self.stateSwitch))
+        return 'box{}'.format(self.stateSwitch)
+
+    def controller_callback(self, event):
+        if event.buttons[6] == 1 or event.buttons[7] == 1 : self.stateSwitch = 'wait'
+        elif event.buttons[2] == 1:  self.stateSwitch = 2
+        elif event.buttons[3] == 1:  self.stateSwitch = 3
+        elif event.buttons[0] == 1:  self.stateSwitch = 4
+        elif event.axes[0] == -1:    self.stateSwitch = 5
+        elif event.axes[1] == 1:     self.stateSwitch = 6
+        elif event.axes[0] == 1:     self.stateSwitch = 7
+        elif event.axes[1] == -1:    self.stateSwitch = 8
+        return
 
 class Box2(smach.State):
     def __init__(self):
@@ -37,7 +73,30 @@ class Box2(smach.State):
                                             'box5', 'box6', 'box7', 'box8'])
 
     def execute(self, userdata):
-        return 'wait'
+        joy_sub = rospy.Subscriber('joy', Joy, self.controller_callback)
+        self.stateSwitch = None
+        # Replace next 3 lines with code to go waypoint
+        start = rospy.get_time()
+        while self.stateSwitch == None:
+            if rospy.get_time() > start + 5: self.stateSwitch = "wait"
+
+        joy_sub.unregister()
+        if self.stateSwitch == "wait":
+            rospy.loginfo("Switching to state WAIT")
+            return 'wait'
+        else: rospy.loginfo("Switching to state BOX{}".format(self.stateSwitch))
+        return 'box{}'.format(self.stateSwitch)
+
+    def controller_callback(self, event):
+        if event.buttons[6] == 1 or event.buttons[7] == 1 : self.stateSwitch = 'wait'
+        elif event.buttons[1] == 1:  self.stateSwitch = 1
+        elif event.buttons[3] == 1:  self.stateSwitch = 3
+        elif event.buttons[0] == 1:  self.stateSwitch = 4
+        elif event.axes[0] == -1:    self.stateSwitch = 5
+        elif event.axes[1] == 1:     self.stateSwitch = 6
+        elif event.axes[0] == 1:     self.stateSwitch = 7
+        elif event.axes[1] == -1:    self.stateSwitch = 8
+        return
 
 class Box3(smach.State):
     def __init__(self):
@@ -45,7 +104,29 @@ class Box3(smach.State):
                                             'box5', 'box6', 'box7', 'box8'])
 
     def execute(self, userdata):
-        return 'wait'
+        joy_sub = rospy.Subscriber('joy', Joy, self.controller_callback)
+        self.stateSwitch = None
+        # Replace next 3 lines with code to go waypoint
+        start = rospy.get_time()
+        while self.stateSwitch == None:
+            if rospy.get_time() > start + 5: self.stateSwitch = "wait"
+
+        joy_sub.unregister()
+        if self.stateSwitch == "wait":
+            rospy.loginfo("Switching to state WAIT")
+            return 'wait'
+        else: rospy.loginfo("Switching to state BOX{}".format(self.stateSwitch))
+        return 'box{}'.format(self.stateSwitch)
+
+    def controller_callback(self, event):
+        if event.buttons[6] == 1 or event.buttons[7] == 1 : self.stateSwitch = 'wait'
+        elif event.buttons[2] == 1:  self.stateSwitch = 2
+        elif event.buttons[1] == 1:  self.stateSwitch = 1
+        elif event.buttons[0] == 1:  self.stateSwitch = 4
+        elif event.axes[0] == -1:    self.stateSwitch = 5
+        elif event.axes[1] == 1:     self.stateSwitch = 6
+        elif event.axes[0] == 1:     self.stateSwitch = 7
+        elif event.axes[1] == -1:    self.stateSwitch = 8
 
 class Box4(smach.State):
     def __init__(self):
@@ -53,7 +134,29 @@ class Box4(smach.State):
                                             'box5', 'box6', 'box7', 'box8'])
 
     def execute(self, userdata):
-        return 'wait'
+        joy_sub = rospy.Subscriber('joy', Joy, self.controller_callback)
+        self.stateSwitch = None
+        # Replace next 3 lines with code to go waypoint
+        start = rospy.get_time()
+        while self.stateSwitch == None:
+            if rospy.get_time() > start + 5: self.stateSwitch = "wait"
+
+        joy_sub.unregister()
+        if self.stateSwitch == "wait":
+            rospy.loginfo("Switching to state WAIT")
+            return 'wait'
+        else: rospy.loginfo("Switching to state BOX{}".format(self.stateSwitch))
+        return 'box{}'.format(self.stateSwitch)
+
+    def controller_callback(self, event):
+        if event.buttons[6] == 1 or event.buttons[7] == 1 : self.stateSwitch = 'wait'
+        elif event.buttons[2] == 1:  self.stateSwitch = 2
+        elif event.buttons[3] == 1:  self.stateSwitch = 3
+        elif event.buttons[1] == 1:  self.stateSwitch = 1
+        elif event.axes[0] == -1:    self.stateSwitch = 5
+        elif event.axes[1] == 1:     self.stateSwitch = 6
+        elif event.axes[0] == 1:     self.stateSwitch = 7
+        elif event.axes[1] == -1:    self.stateSwitch = 8
 
 class Box5(smach.State):
     def __init__(self):
@@ -61,7 +164,29 @@ class Box5(smach.State):
                                             'box1', 'box6', 'box7', 'box8'])
 
     def execute(self, userdata):
-        return 'wait'
+        joy_sub = rospy.Subscriber('joy', Joy, self.controller_callback)
+        self.stateSwitch = None
+        # Replace next 3 lines with code to go waypoint
+        start = rospy.get_time()
+        while self.stateSwitch == None:
+            if rospy.get_time() > start + 5: self.stateSwitch = "wait"
+
+        joy_sub.unregister()
+        if self.stateSwitch == "wait":
+            rospy.loginfo("Switching to state WAIT")
+            return 'wait'
+        else: rospy.loginfo("Switching to state BOX{}".format(self.stateSwitch))
+        return 'box{}'.format(self.stateSwitch)
+
+    def controller_callback(self, event):
+        if event.buttons[6] == 1 or event.buttons[7] == 1 : self.stateSwitch = 'wait'
+        elif event.buttons[2] == 1:  self.stateSwitch = 2
+        elif event.buttons[3] == 1:  self.stateSwitch = 3
+        elif event.buttons[0] == 1:  self.stateSwitch = 4
+        elif event.buttons[1] == 1:  self.stateSwitch = 1
+        elif event.axes[1] == 1:     self.stateSwitch = 6
+        elif event.axes[0] == 1:     self.stateSwitch = 7
+        elif event.axes[1] == -1:    self.stateSwitch = 8
 
 class Box6(smach.State):
     def __init__(self):
@@ -69,7 +194,29 @@ class Box6(smach.State):
                                             'box5', 'box1', 'box7', 'box8'])
 
     def execute(self, userdata):
-        return 'wait'
+        joy_sub = rospy.Subscriber('joy', Joy, self.controller_callback)
+        self.stateSwitch = None
+        # Replace next 3 lines with code to go waypoint
+        start = rospy.get_time()
+        while self.stateSwitch == None:
+            if rospy.get_time() > start + 5: self.stateSwitch = "wait"
+
+        joy_sub.unregister()
+        if self.stateSwitch == "wait":
+            rospy.loginfo("Switching to state WAIT")
+            return 'wait'
+        else: rospy.loginfo("Switching to state BOX{}".format(self.stateSwitch))
+        return 'box{}'.format(self.stateSwitch)
+
+    def controller_callback(self, event):
+        if event.buttons[6] == 1 or event.buttons[7] == 1 : self.stateSwitch = 'wait'
+        elif event.buttons[2] == 1:  self.stateSwitch = 2
+        elif event.buttons[3] == 1:  self.stateSwitch = 3
+        elif event.buttons[0] == 1:  self.stateSwitch = 4
+        elif event.axes[0] == -1:    self.stateSwitch = 5
+        elif event.buttons[1] == 1:  self.stateSwitch = 1
+        elif event.axes[0] == 1:     self.stateSwitch = 7
+        elif event.axes[1] == -1:    self.stateSwitch = 8
 
 class Box7(smach.State):
     def __init__(self):
@@ -77,7 +224,29 @@ class Box7(smach.State):
                                             'box5', 'box6', 'box1', 'box8'])
 
     def execute(self, userdata):
-        return 'wait'
+        joy_sub = rospy.Subscriber('joy', Joy, self.controller_callback)
+        self.stateSwitch = None
+        # Replace next 3 lines with code to go waypoint
+        start = rospy.get_time()
+        while self.stateSwitch == None:
+            if rospy.get_time() > start + 5: self.stateSwitch = "wait"
+
+        joy_sub.unregister()
+        if self.stateSwitch == "wait":
+            rospy.loginfo("Switching to state WAIT")
+            return 'wait'
+        else: rospy.loginfo("Switching to state BOX{}".format(self.stateSwitch))
+        return 'box{}'.format(self.stateSwitch)
+
+    def controller_callback(self, event):
+        if event.buttons[6] == 1 or event.buttons[7] == 1 : self.stateSwitch = 'wait'
+        elif event.buttons[2] == 1:  self.stateSwitch = 2
+        elif event.buttons[3] == 1:  self.stateSwitch = 3
+        elif event.buttons[0] == 1:  self.stateSwitch = 4
+        elif event.axes[0] == -1:    self.stateSwitch = 5
+        elif event.axes[1] == 1:     self.stateSwitch = 6
+        elif event.buttons[1] == 1:     self.stateSwitch = 1
+        elif event.axes[1] == -1:    self.stateSwitch = 8
 
 class Box8(smach.State):
     def __init__(self):
@@ -85,18 +254,33 @@ class Box8(smach.State):
                                             'box5', 'box6', 'box7', 'box1'])
 
     def execute(self, userdata):
-        return 'wait'
+        joy_sub = rospy.Subscriber('joy', Joy, self.controller_callback)
+        self.stateSwitch = None
+        # Replace next 3 lines with code to go waypoint
+        start = rospy.get_time()
+        while self.stateSwitch == None:
+            if rospy.get_time() > start + 5: self.stateSwitch = "wait"
 
-def controller_callback(event):
-    global button_start
-    if event.buttons[1] == 1:
-        button_start = not button_start
+        joy_sub.unregister()
+        if self.stateSwitch == "wait":
+            rospy.loginfo("Switching to state WAIT")
+            return 'wait'
+        else: rospy.loginfo("Switching to state BOX{}".format(self.stateSwitch))
+        return 'box{}'.format(self.stateSwitch)
 
+    def controller_callback(self, event):
+        if event.buttons[6] == 1 or event.buttons[7] == 1 : self.stateSwitch = 'wait'
+        elif event.buttons[2] == 1:  self.stateSwitch = 2
+        elif event.buttons[3] == 1:  self.stateSwitch = 3
+        elif event.buttons[0] == 1:  self.stateSwitch = 4
+        elif event.axes[0] == -1:    self.stateSwitch = 5
+        elif event.axes[1] == 1:     self.stateSwitch = 6
+        elif event.axes[0] == 1:     self.stateSwitch = 7
+        elif event.buttons[1] == 1:  self.stateSwitch = 1
 
 def request_shutdown(sig, frame):
     global shutdown_requested
     shutdown_requested = True
-
 
 def main():
     global button_start
@@ -104,8 +288,7 @@ def main():
     button_start = False
     shutdown_requested = False
 
-    rospy.init_node('cop_bot')
-    controller_sub = rospy.Subscriber('joy', Joy, controller_callback)
+    rospy.init_node('box_map')
 
     # Create done outcome which will stop the state machine
     sm_turtle = smach.StateMachine(outcomes=['DONE'])
