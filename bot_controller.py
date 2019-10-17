@@ -10,10 +10,28 @@ from geometry_msgs.msg import Twist
 import numpy as np
 from sensor_msgs.msg import LaserScan
 from sensor_msgs.msg import Joy
+from geometry_msgs.msg import PoseWithCovarianceStamped
+import actionlib
+from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+import time
 
 global shutdown_requested
 global linear_velocity
 global rotation_velocity
+
+"""
+pose: 
+    position: 
+      x: 3.18032880923
+      y: 2.36354110942
+      z: 0.0
+    orientation: 
+      x: 0.0
+      y: 0.0
+      z: 0.86541182624
+      w: 0.501061244763
+
+"""
 
 class Control(smach.State):
 
@@ -24,7 +42,23 @@ class Control(smach.State):
         self.rotation_velocity_multiplier = rotation_velocity_multiplier
 
         # Publish movement commands to the turtlebot's base
-        self.cmd_vel_pub = rospy.Publisher('mobile_base/commands/velocity', Twist)
+        self.cmd_vel_pub = rospy.Publisher('mobile_base/commands/velocity', Twist, queue_size=1)
+        self.initial_pub = rospy.Publisher('/initialpose', PoseWithCovarianceStamped, queue_size=10)
+        self.client = actionlib.SimpleActionClient('move_base', MoveBaseAction)  # <3>
+        self.client.wait_for_server()
+
+        initial = PoseWithCovarianceStamped()
+        initial.pose.pose.position.x = -1.3
+        initial.pose.pose.position.y = -0
+        initial.pose.pose.position.z = 0.0
+        initial.pose.pose.orientation.x = 0.0
+        initial.pose.pose.orientation.y = 0.0
+        initial.pose.pose.orientation.z = -0.372922294621
+        initial.pose.pose.orientation.w = 0.927862577203
+        print("waiting")
+        time.sleep(1)
+        self.initial_pub.publish(initial)
+        print("initial pose sent")
 
         # Create a Twist message, and fill in the fields.  We're also
         # going to fill in the linear.x field, even though we think
@@ -45,10 +79,26 @@ class Control(smach.State):
         global linear_velocity
         global rotation_velocity
 
+        test = MoveBaseGoal()
+        test.target_pose.header.frame_id = "map"
+        test.target_pose.header.stamp = rospy.Time.now()
+        test.target_pose.pose.position.x = 0
+        test.target_pose.pose.position.y = 0
+        test.target_pose.pose.orientation.z = -0.372922294621
+        test.target_pose.pose.orientation.w = 0.927862577203
+        #self.goal_pub.publish(test)
+        self.client.send_goal(test)
+        self.client.wait_for_result()
+        print("Goal sent")
+
         while not shutdown_requested:
             self.command.linear.x = linear_velocity * self.linear_velocity_multiplier
             self.command.angular.z = rotation_velocity * self.rotation_velocity_multiplier
             self.cmd_vel_pub.publish(self.command)
+            self.client.send_goal(test)
+            self.client.wait_for_result()
+            #self.initial_pub.publish(initial)
+
 
         self.command.linear.x = 0
         self.command.angular.z = 0

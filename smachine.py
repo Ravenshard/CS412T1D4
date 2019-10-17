@@ -12,6 +12,28 @@ from sensor_msgs.msg import Joy
 
 global shutdown_requested
 
+
+'''
+header: 
+  seq: 125
+  stamp: 
+    secs: 1571336109
+    nsecs: 238852016
+  frame_id: "map"
+pose: 
+  pose: 
+    position: 
+      x: -1.4029582974
+      y: -0.161230396952
+      z: 0.0
+    orientation: 
+      x: 0.0
+      y: 0.0
+      z: -0.409603401919
+      w: 0.912263697149
+  covariance: [0.003383795001103751, 0.0030187297400489366, 0.0, 0.0, 0.0, 0.0, 0.0030187297400489366, 0.0106325757067692, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0017897886634780384]
+'''
+
 class Wait(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['box1', 'box2', 'box3', 'box4',
